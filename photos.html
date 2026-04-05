@@ -9,8 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Playfair+Display:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
   <style>
     /* ---- Map Page Specific Styles ---- */
     .map-container {
@@ -543,7 +543,7 @@
           lat: 40.6401,
           lon: 22.9444,
           photos: [
-            { src: '/photos/thessaloniki/History_of_the_Universe_with_primoridal_black_holes.png', caption: 'White Tower of Thessaloniki' },
+            { src: null, caption: 'White Tower of Thessaloniki' },
             { src: null, caption: 'Aristotelous Square' },
             { src: null, caption: 'Thessaloniki waterfront at sunset' },
           ]
@@ -666,6 +666,10 @@
   const worldUrl = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
 
   d3.json(worldUrl).then(world => {
+    if (!world || !world.objects) {
+      console.error('Map data loaded but invalid:', world);
+      return;
+    }
     const countries = topojson.feature(world, world.objects.countries);
 
     // Country name lookup from TopoJSON numeric IDs
@@ -707,6 +711,9 @@
         if (!visitedCountries.has(alpha3)) return;
         zoomToCountry(d, alpha3);
       });
+  }).catch(err => {
+    console.error('Failed to load map data:', err);
+    document.getElementById('mapContainer').innerHTML += '<p style="text-align:center;color:#f56565;padding:2rem;">Map failed to load. Please refresh the page.</p>';
   });
 
   // --- ZOOM TO COUNTRY ---
@@ -930,7 +937,7 @@
     196: 'Cyprus', 203: 'Czech Republic', 208: 'Denmark', 262: 'Djibouti',
     214: 'Dominican Republic', 218: 'Ecuador', 818: 'Egypt', 222: 'El Salvador',
     226: 'Equatorial Guinea', 232: 'Eritrea', 233: 'Estonia', 231: 'Ethiopia',
-    -99: 'Falkland Islands', 242: 'Fiji', 246: 'Finland', 250: 'France',
+    '-99': 'Falkland Islands', 242: 'Fiji', 246: 'Finland', 250: 'France',
     266: 'Gabon', 270: 'Gambia', 268: 'Georgia', 276: 'Germany', 288: 'Ghana',
     300: 'Greece', 304: 'Greenland', 320: 'Guatemala', 324: 'Guinea',
     328: 'Guyana', 332: 'Haiti', 340: 'Honduras', 348: 'Hungary',
